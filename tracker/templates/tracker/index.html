@@ -1,0 +1,54 @@
+{% extends "base.html" %} 
+{% load static %} 
+{% block title %}Courier | Tracking{% endblock title %} 
+{% block head_script %}
+  {{ block.super }}
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="{% static 'css/tracker/style.css' %}"
+  />
+  <script src="https://unpkg.com/@googlemaps/markerclustererplus/dist/index.min.js"></script>
+  <script>
+    // Initialize and add the map
+    function initMap() {
+      // The location of Uluru
+      const ekomarket = { lat: 59.8514125, lng: 30.3324928 };
+      // The map, centered at Uluru
+      const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 4,
+        center: ekomarket
+      });
+
+      // Create an array of alphabetical characters used to label the markers.
+      const labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      // safely get locations data from the backend
+      let locations = JSON.parse("{{ locations|escapejs }}");
+
+      const markers = locations.map((loc, i) => {
+        return new google.maps.Marker({
+          position: { lat: loc.lat, lng: loc.lng },
+          label: loc.lbl
+        });
+      });
+      // Add a marker clusterer to manage the markers.
+      new MarkerClusterer(map, markers, {
+        imagePath:
+          "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m"
+      });
+
+      // The marker, positioned at Uluru
+    }
+  </script>
+{% endblock head_script %} 
+
+{% block content %}
+  <!--The div element for the map -->
+  <div id="map"></div>
+
+  <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key={{GOOGLE_MAPS_API_KEY}}&callback=initMap&libraries=&v=weekly}"
+    async
+  ></script>
+{% endblock content %}
