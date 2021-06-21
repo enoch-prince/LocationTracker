@@ -43,28 +43,31 @@ class CourierSerializer(ModelSerializer):
 
 
 class DeviceSerializer(ModelSerializer):
+
     courier_id = serializers.CharField(source='courier.id')
     
     class Meta:
         model = Device
-        fields = ('courier_id', 'device_id', 'device_model', 'app', 'version', 'created_at', 'updated_at')
+        fields = ('id','courier_id', 'device_id', 'device_model', 'app', 'version', 'created_at', 'updated_at')
         read_only_fields = ('created_at', 'updated_at')
     
     def create(self, validated_data):
-        courier_id = validated_data.pop('courier_id')
-        courier = Courier.objects.filter(id=courier_id)
+        print(validated_data)
+        courier_data = validated_data.pop('courier')
+        courier = Courier.objects.filter(id=courier_data.get('id'))
         if not courier.exists():
             return None
         device = Device.objects.create(courier=courier.first(), **validated_data)
         return device
     
     def update(self, instance, validated_data):
-        courier_id = validated_data.get('courier_id')
+        courier_id = validated_data.get('courier').get('id')
         if not courier_id:
             return None
         instance.device_id = validated_data.get('device_id', instance.device_id)
         instance.device_model = validated_data.get('device_model', instance.device_model)
         instance.app = validated_data.get('app', instance.app)
         instance.version = validated_data.get('version', instance.version)
+        instance.updated_at = datetime.now().replace(microsecond=0)
         instance.save(update_fields=['device_id', 'device_model', 'app', 'version', 'updated_at'])
         return instance
