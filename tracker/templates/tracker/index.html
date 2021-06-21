@@ -3,11 +3,11 @@
 {% block title %}Courier | Tracking{% endblock title %} 
 {% block head_script %}
   {{ block.super }}
-  <link
+  {% comment %} <link
     rel="stylesheet"
     type="text/css"
     href="{% static 'css/tracker/style.css' %}"
-  />
+  /> {% endcomment %}
   <script src="https://unpkg.com/@googlemaps/markerclustererplus/dist/index.min.js"></script>
   <script>
     // Initialize and add the map
