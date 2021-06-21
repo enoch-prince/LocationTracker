@@ -19,7 +19,6 @@ class LocationEditPermission(BasePermission):
         return request.user and request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
-        #print({"obj": dir(obj)})
         if request.method in SAFE_METHODS:
             return True
         if request.user.is_superuser:
